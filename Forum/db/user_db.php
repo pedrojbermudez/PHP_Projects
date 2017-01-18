@@ -73,7 +73,17 @@
                     $country = isset($country) && !empty($country) ? $country : '';
                     $state = isset($state) && !empty($state) ? $state : '';
                     $city = isset($city) && !empty($city) ? $city : '';
-                    $user = new User($user_id, $user_name, $name, $surname, $country, $state, $city, $profile_picture, $is_mod, $deleted);
+                    $user = new User();
+                    $user->set_user_id($user_id);
+                    $user->set_user_name($user_name);
+                    $user->set_name($name);
+                    $user->set_surname($surname);
+                    $user->set_country($country);
+                    $user->set_state($state);
+                    $user->set_city($city);
+                    $user->set_profile_picture($profile_picture);
+                    $user->set_is_mod($is_mod);
+                    $user->set_deleted($deleted);
                 }
                  $stmt->close();
             }
@@ -97,16 +107,16 @@
                     $country = isset($country) && !empty($country) ? $country : '';
                     $state = isset($state) && !empty($state) ? $state : '';
                     $city = isset($city) && !empty($city) ? $city : '';
-                    $user_object->set_($user_id);
-                    $user_object->set_($user_name);
-                    $user_object->set_($name);
-                    $user_object->set_($surname);
-                    $user_object->set_($country);
-                    $user_object->set_($state);
-                    $user_object->set_($city);
-                    $user_object->set_($profile_picture);
-                    $user_object->set_($is_mod);
-                    $user_object->set_($deleted);
+                    $user_object->set_user_id($user_id);
+                    $user_object->set_user_name($user_name);
+                    $user_object->set_name($name);
+                    $user_object->set_surname($surname);
+                    $user_object->set_country($country);
+                    $user_object->set_state($state);
+                    $user_object->set_city($city);
+                    $user_object->set_profile_picture($profile_picture);
+                    $user_object->set_is_mod($is_mod);
+                    $user_object->set_deleted($deleted);
                 }
                  $stmt->close();
             }
