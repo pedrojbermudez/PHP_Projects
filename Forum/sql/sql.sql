@@ -1,3 +1,5 @@
+drop database `forum_db`;
+
 create database `forum_db`;
 
 use `forum_db`;
@@ -49,6 +51,8 @@ create table if not exists `post`
     primary key(`post_id`)
 );
 
-create index `index user_name pass email is_mod` on `user` (`user_name`(75), `password`(255), `email`(75), `is_mod`); 
+create index `index is_mod` on `user` (`is_mod`);
+create index `index email` on `user` (`email`(75));
+create index `index user_name pass` on `user` (`user_name`(75), `password`(255));
 create index `index thread_id on post` on `post` (`thread_id`);
 create index `index forum_id on thread` on `thread` (`forum_id`);
