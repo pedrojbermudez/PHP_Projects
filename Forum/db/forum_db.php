@@ -68,7 +68,12 @@
                 $stmt->execute();
                 $stmt->bind_result($category_id, $name, $description);
                 if($stmt->fetch()) {
-                    $forum = new Forum($forum_id, $name, $description, $category_id);
+                    $forum = new Forum();
+                    $forum->set_forum_id($forum_id);
+                    $forum->set_name($name);
+                    $forum->set_category_id($category_id);
+                    if(isset($description) && !empty($description))
+                        $forum->set_description($description);
                 }
                 $stmt->close();
             }
@@ -85,7 +90,13 @@
                 $stmt->execute();
                 $stmt->bind_result($forum_id, $name, $description);
                 while($stmt->fetch()) {
-                    $forums[] = new Forum($forum_id, $name, $description, $category_id);
+                    $forum = new Forum();
+                    $forum->set_forum_id($forum_id);
+                    $forum->set_name($name);
+                    $forum->set_category_id($category_id);
+                    if(isset($description) && !empty($description))
+                        $forum->set_description($description);
+                    $forums[] = $forum;
                 }
                 $stmt->close();
             }

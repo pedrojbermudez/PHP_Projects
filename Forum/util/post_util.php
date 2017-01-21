@@ -27,5 +27,6 @@
         function delete_post(int $post_id) { $this->post_db->delete_post($post_id); }
         function get_post(int $post_id): Post { return $this->post_db->get_post($post_id); }
         function get_posts(int $thread_id): array { return $this->post_db->get_posts($thread_id); }
+        function post_exists(int $post_id): bool { return $this->post_db->post_exists($post_id); }
     }    
 ?>

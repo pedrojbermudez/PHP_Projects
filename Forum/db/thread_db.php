@@ -61,7 +61,7 @@
         function get_thread(int $thread_id): Thread {
             $this->conn = new Connection();
             $mysqli = $this->conn->connect();
-            $thread;
+            $thread = new Thread();
             if($stmt = $mysqli->prepare('select thread.thread_id as thread_id, 
                 thread.name thread_name, thread.user_id as user_id, 
                 user.user_name as user_name, thread.forum_id as forum_id, 
@@ -72,8 +72,12 @@
                 $stmt->execute();
                 $stmt->bind_result($thread_id, $thread_name, $user_id, $user_name, $forum_id, $forum_name);
                 if($stmt->fetch()) {
-                    $thread = new Thread($thread_id, $thread_name, $forum_id,
-                        $forum_name, $user_id, $user_name);
+                    $thread->set_thread_id($thread_id);
+                    $thread->set_thread_name($thread_name);
+                    $thread->set_forum_id($forum_id);
+                    $thread->set_forum_name($forum_name);
+                    $thread->set_user_id($user_id);
+                    $thread->set_user_name($user_name);
                 }
                 $stmt->close();
             }
@@ -102,7 +106,6 @@
             $this->conn = new Connection();
             $mysqli = $this->conn->connect();
             $threads = array();
-            echo 'forum id get threads '.$forum_id.'<br />';
             if($stmt = $mysqli->prepare('select thread.thread_id as thread_id, 
                 thread.name thread_name, thread.user_id as user_id, 
                 user.user_name as user_name, thread.forum_id as forum_id, 
@@ -113,8 +116,14 @@
                 $stmt->execute();
                 $stmt->bind_result($thread_id, $thread_name, $user_id, $user_name, $forum_id, $forum_name);
                 while($stmt->fetch()) {
-                    $threads[] = new Thread($thread_id, $thread_name, $forum_id,
-                        $forum_name, $user_id, $user_name);
+                    $thread = new Thread();
+                    $thread->set_thread_id($thread_id);
+                    $thread->set_thread_name($thread_name);
+                    $thread->set_forum_id($forum_id);
+                    $thread->set_forum_name($forum_name);
+                    $thread->set_user_id($user_id);
+                    $thread->set_user_name($user_name);
+                    $threads[] = $thread;
                 }
                 $stmt->close();
             }

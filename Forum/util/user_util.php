@@ -32,11 +32,26 @@
         }
 
         function delete_user(int $user_id) { $this->user_db->delete_user($user_id); }
+        
         function get_user(int $user_id): User {
              $user = $this->user_db->get_user($user_id);
              return $user; 
         }
+
+        // Check if user name exists in database
         function user_exists(string $user_name): bool { return $this->user_db->user_exists($user_name); }
-        function email_exists(string $email): bool { return $this->user_db->user_exists($email); }
+        
+        // Check if email exists in database
+        function email_exists(string $email): bool { return $this->user_db->email_exists($email); }
+        
+        // Return an User object with data filled.
+        function get_user_login(string $user_name, string $password): User { 
+            return $this->user_db->get_user_login($user_name, $password); 
+        }
+
+        // Check the password given in the database
+        function check_passowrd(string $user_name, string $password): bool { 
+            return $this->user_db->check_passowrd($user_name, $password);
+        }
     } 
 ?>

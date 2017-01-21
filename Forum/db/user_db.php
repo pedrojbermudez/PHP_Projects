@@ -36,7 +36,6 @@
             $mysqli = $this->conn_db->connect();
             $sql = 'update user set name=?, surname=?, country=?, state=?, city=?, profile_picture=? where user_id=?';
             if($stmt = $mysqli->prepare($sql)) {
-                echo 'en mi if';
                 $stmt->bind_param('ssssssi', $name, $surname, $country, $state, $city, 
                     $profile_picture, $user_id);
                 $stmt->execute();
@@ -68,22 +67,22 @@
                 $stmt->execute();
                 $stmt->bind_result($user_id, $name, $surname, $country, $state, $city, $profile_picture, $is_mod, $deleted);
                 if($stmt->fetch()){
-                    $name = isset($name) && !empty($name) ? $name : '';
-                    $surname = isset($surname) && !empty($surname) ? $surname : '';
-                    $country = isset($country) && !empty($country) ? $country : '';
-                    $state = isset($state) && !empty($state) ? $state : '';
-                    $city = isset($city) && !empty($city) ? $city : '';
                     $user = new User();
                     $user->set_user_id($user_id);
                     $user->set_user_name($user_name);
-                    $user->set_name($name);
-                    $user->set_surname($surname);
-                    $user->set_country($country);
-                    $user->set_state($state);
-                    $user->set_city($city);
                     $user->set_profile_picture($profile_picture);
                     $user->set_is_mod($is_mod);
                     $user->set_deleted($deleted);
+                    if(isset($name) && !empty($name))
+                        $user->set_name($name);
+                    if(isset($surname) && !empty($surname))
+                        $user->set_surname($surname);
+                    if(isset($country) && !empty($country))
+                        $user->set_country($country);
+                    if(isset($state) && !empty($state))
+                        $user->set_state($state);
+                    if(isset($city) && !empty($city))
+                        $user->set_city($city);
                 }
                  $stmt->close();
             }
@@ -96,32 +95,33 @@
             $mysqli = $this->conn_db->connect();
             $sql = 'select user_name, name, surname, country, state, city, profile_picture, is_mod, deleted 
                     from user where user_id=?';
-            $user_object = new User();
+            $user = new User();
             if($stmt = $mysqli->prepare($sql)) {
                 $stmt->bind_param('i', $user_id);
                 $stmt->execute();
-                $stmt->bind_result($user_name, $name, $surname, $country, $state, $city, $profile_picture, $is_mod, $deleted);
+                $stmt->bind_result($user_name, $name, $surname, $country, $state, $city, $profile_picture, $is_mod, 
+                    $deleted);
                 if($stmt->fetch()){
-                    $name = isset($name) && !empty($name) ? $name : '';
-                    $surname = isset($surname) && !empty($surname) ? $surname : '';
-                    $country = isset($country) && !empty($country) ? $country : '';
-                    $state = isset($state) && !empty($state) ? $state : '';
-                    $city = isset($city) && !empty($city) ? $city : '';
-                    $user_object->set_user_id($user_id);
-                    $user_object->set_user_name($user_name);
-                    $user_object->set_name($name);
-                    $user_object->set_surname($surname);
-                    $user_object->set_country($country);
-                    $user_object->set_state($state);
-                    $user_object->set_city($city);
-                    $user_object->set_profile_picture($profile_picture);
-                    $user_object->set_is_mod($is_mod);
-                    $user_object->set_deleted($deleted);
+                    $user->set_user_id($user_id);
+                    $user->set_user_name($user_name);
+                    $user->set_profile_picture($profile_picture);
+                    $user->set_is_mod($is_mod);
+                    $user->set_deleted($deleted);
+                    if(isset($name) && !empty($name))
+                        $user->set_name($name);
+                    if(isset($surname) && !empty($surname))
+                        $user->set_surname($surname);
+                    if(isset($country) && !empty($country))
+                        $user->set_country($country);
+                    if(isset($state) && !empty($state))
+                        $user->set_state($state);
+                    if(isset($city) && !empty($city))
+                        $user->set_city($city);
                 }
                  $stmt->close();
             }
             $mysqli->close();
-            return $user_object;
+            return $user;
         }
 
         private function get_user_deleted(int $user_id): int {
@@ -166,9 +166,31 @@
              if($stmt = $mysqli->prepare('select email from user where email=?')) {
                 $stmt->bind_param('s', $email);
                 $stmt->execute();
-                $stmt->bind_result($email);
+                $stmt->bind_result($email_sql);
                 if($stmt->fetch())
                     $exist = true;
+                else
+                    $exist = false;
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $exist;
+         }
+
+         function check_passowrd(string $user_name, string $password): bool {
+             $this->conn_db = new Connection();
+             $mysqli = $this->conn_db->connect();
+             $password = md5($password);
+             $exist;
+             if($stmt = $mysqli->prepare('select password from user where user_name=?')) {
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $stmt->bind_result($password_sql);
+                if($stmt->fetch())
+                    if(strcmp($password, $password_sql) == 0)
+                        $exist = true;
+                    else
+                        $exist = false;
                 else
                     $exist = false;
                 $stmt->close();

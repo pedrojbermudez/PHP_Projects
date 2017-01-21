@@ -1,6 +1,9 @@
 <?php
     include_once('util/user_util.php');
     include_once('util/menu.php');
+    include_once('data/user.php');
+    
+    if(session_status() == PHP_SESSION_NONE) { session_start(); }
 
     $user_util = new UserUtil();
     $menu_footer = new MenuFooter();
@@ -20,11 +23,10 @@
     $profile_picture;
 
     // Checking if someone wants to edit a thread
-    if(isset($_GET['uid'])) {
-        $user = $user_util->get_user($_GET['uid']);
-        // Checking if thread exists
+    if(isset($_SESSION['user'])) {
+        $user = $_SESSION['user'];
         if($user->get_user_id() > -1) {
-            // Thread exists
+            // Edit a user
             $title = 'Edit '.$user->get_user_name();
             $user_id = '<input type="hidden" name="user_id" value="'.$user->get_user_id().'" />';
             $current_profile_picture = '<input type="hidden" name="current_profile_picture" value="'.$user->get_profile_picture().'" />';

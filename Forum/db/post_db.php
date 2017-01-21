@@ -76,11 +76,17 @@
                 $stmt->bind_result($thread_id, $post, $user_id, $user_name, $thread_name, 
                     $creation_date, $modification_date, $profile_picture);
                 if($stmt->fetch()) {
-                    $modification_date = isset($modification_date) ? $modification_date : '';
-                    $post_object = new Post($post_id, $user_id, $thread_id, $post,
-                        $creation_date, $modification_date, $profile_picture);
-                    $post_object->set_user_name($user_name);
+                    $post_object = new Post();
+                    $post_object->set_post_id($post_id);
+                    $post_object->set_user_id($user_id);
+                    $post_object->set_thread_id($thread_id);
+                    $post_object->set_post($post);
                     $post_object->set_thread_name($thread_name);
+                    $post_object->set_user_name($user_name);
+                    $post_object->set_profile_picture($profile_picture);
+                    $post_object->set_creation_date($creation_date);
+                    if(isset($modification_date) && !empty($modification_date))
+                        $post_object->set_modification_date($modification_date);
                 }
                 $stmt->close();
             }
@@ -103,17 +109,39 @@
                 $stmt->bind_result($post_id, $post, $user_id, $user_name, $thread_name, $creation_date, 
                     $modification_date, $profile_picture);
                 while($stmt->fetch()) {
-                    $modification_date = isset($modification_date) ? $modification_date : '';
-                    $post_object = new Post($post_id, $user_id, $thread_id, $post,
-                        $creation_date, $modification_date, $profile_picture);
-                    $post_object->set_user_name($user_name);
+                    $post_object = new Post();
+                    $post_object->set_post_id($post_id);
+                    $post_object->set_user_id($user_id);
+                    $post_object->set_thread_id($thread_id);
+                    $post_object->set_post($post);
                     $post_object->set_thread_name($thread_name);
+                    $post_object->set_user_name($user_name);
+                    $post_object->set_profile_picture($profile_picture);
+                    $post_object->set_creation_date($creation_date);
+                    if(isset($modification_date) && !empty($modification_date))
+                        $post_object->set_modification_date($modification_date);
                     $posts[] = $post_object;
                 }
                 $stmt->close();
             }
             $mysqli->close();
             return $posts;
+        }
+
+        function post_exists(int $post_id): bool {
+            $this->conn = new Connection();
+            $mysqli = $this->conn->connect();
+            $exist;
+            if($stmt = $mysqli->prepare('select post_id from post where post_id=?')) {
+                $stmt->bind_param('i', $post_id);
+                $stmt->execute();
+                $stmt->bind_result($post_id);
+                if($stmt->fetch()) $exist = true;
+                else $exist = false;
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $exist;
         }
     }
 ?>

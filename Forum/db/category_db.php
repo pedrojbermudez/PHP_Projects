@@ -66,9 +66,15 @@
                 $stmt->execute();
                 $stmt->bind_result($category_id, $category_name, $category_description);
                 $forum_db = new ForumDB();
-                while($stmt->fetch()) {
-                    $category = new Category($category_id, $category_name, 
-                        $category_description, $forum_db->get_forums($category_id));
+                if($stmt->fetch()) {
+                    $forums = $forum_db->get_forums($category_id);
+                    $category = new Category();
+                    $category->set_forum_id($category_id);
+                    $category->set_name($category_name);
+                    if(isset($category_description) && !empty($category_description))
+                        $category->set_description($category_description);
+                    if(sizeof($forums) > 0)
+                        $category->set_forums($forums);
                 }
             }
             $stmt->close();
@@ -88,8 +94,15 @@
                 $stmt->bind_result($category_id, $category_name, $category_description);
                 $forum_db = new ForumDB();
                 while($stmt->fetch()) {
-                    $categories[] = new Category($category_id, $category_name, 
-                        $category_description, $forum_db->get_forums($category_id));
+                    $forums = $forum_db->get_forums($category_id);
+                    $category = new Category();
+                    $category->set_forum_id($category_id);
+                    $category->set_name($category_name);
+                    if(isset($category_description) && !empty($category_description))
+                        $category->set_description($category_description);
+                    if(sizeof($forums) > 0)
+                        $category->set_forums($forums);
+                    $categories[] = $category;
                 }
             }
             $stmt->close();

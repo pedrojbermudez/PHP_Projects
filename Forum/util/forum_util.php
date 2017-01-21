@@ -5,6 +5,7 @@
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/thread.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/db/forum_db.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/util/thread_util.php');
+    
 
     /**
      * Class to manage Forum object given an object directly or just a 
@@ -46,13 +47,16 @@
                     // Forum has some threads
                     $max = sizeof($threads);
                     for ($i=0; $i < $max; $i++) { 
+                        echo $threads[$i]->get_thread_id();
                         $tmp .= '<div class="div_thread_list">'
                             .$this->delete_thread_form($threads[$i]->get_thread_id()).
-                            '<p><a href="thread.php?tid='.$threads[$i]->get_thread_id().'">'
-                            .$threads[$i]->get_thread_name().'</a> | <a href="ne_thread.php?tid='
-                            .$threads[$i]->get_thread_id().'">Edit</a></p><q>'
-                            .'<a href="user.php?uid='.$threads[$i]->get_user_id().'">'
-                            .$threads[$i]->get_user_name().'</a></q></div><hr />';
+                            '<p>
+                                <a href="thread.php?tid='.$threads[$i]->get_thread_id().'">'
+                                .$threads[$i]->get_thread_name().'</a>'
+                                .$this->edit_thread_html($threads[$i]->get_thread_id(), 
+                                    $threads[$i]->get_user_id())
+                            .'<br /><q>Created by: <a href="user.php?uid='.$threads[$i]->get_user_id().'">'
+                            .$threads[$i]->get_user_name().'</a></q></p></div><hr />';
                     }
                 } else {
                     // No forum in that category
@@ -62,9 +66,9 @@
                 $html .= '
                         <h1>'.$forum->get_name().'</h1>
                         <q>'.$forum->get_description().'</q><br />
-                        <p>'.$this->delete_forum_form($forum->get_forum_id()).'
-                        <a href="ne_forum.php?fid='.$forum->get_forum_id().'">Edit Forum</a> | 
-                        <a href="ne_thread.php?fid='.$forum_id.'">New thread</a></p>
+                        <p>'.$this->delete_forum_form($forum->get_forum_id())
+                        .$this->edit_forum_html($forum->get_forum_id())
+                        .$this->new_thread($forum->get_forum_id()).'
                         '.$tmp;
             } else {
                 // Wrong forum id
@@ -74,22 +78,38 @@
             return $html;
         }
 
+        private function new_thread($forum_id): string {
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() > -1 ? 
+                    '<p><a href="ne_thread.php?fid='.$forum_id.'">New thread</a></p>' : '';
+        }
+
+        private function edit_forum_html(int $forum_id): string {
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ? 
+                    '<p><a href="ne_forum.php?fid='.$forum_id.'">Edit Forum</a></p>' : '';
+        }
+
+        private function edit_thread_html(int $thread_id, int $user_id): string {
+            return isset($_SESSION['user']) && ($_SESSION['user']->get_user_id() == 1  
+                || $_SESSION['user']->get_user_id() == $user_id )? 
+                    '<p><a href="ne_thread.php?tid='.$thread_id.'">Edit thread</a></p>' : '';
+        }
+
         private function delete_thread_form(int $thread_id): string {
-            // Next version only admin and author can delete it
-            return '<form action="php/process_thread.php" method="POST">
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ?
+                    '<form action="php/process_thread.php" method="POST">
                         <input type="hidden" name="thread_id" value="'.$thread_id.'" />
                         <input type="hidden" name="delete" value="true">
                         <input type="submit" value="Delete">
-                    </form>';
+                    </form>' : '';
         }
 
         private function delete_forum_form(int $forum_id): string {
-            // Next version only admin can delete it
-            return '<form action="php/process_forum.php" method="POST">
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ?
+                    '<form action="php/process_forum.php" method="POST">
                         <input type="hidden" name="forum_id" value="'.$forum_id.'" />
                         <input type="hidden" name="delete" value="true">
                         <input type="submit" value="Delete Forum">
-                    </form>';
+                    </form>' : '';
         }
     }    
 ?>

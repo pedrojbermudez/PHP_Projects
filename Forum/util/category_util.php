@@ -42,9 +42,9 @@
                             .$forums[$i]->get_forum_id().'">'
                             .$forums[$i]->get_name().'</a></p><q>'
                             .$forums[$i]->get_description().'</q>'
-                            .$this->delete_forum_form($forums[$i]->get_forum_id()).'
-                            <a href="ne_forum.php?fid='.$forums[$i]->get_forum_id().'">Edit '
-                            .$forums[$i]->get_name().'</a></div><hr />';
+                            .$this->edit_forum_html($forums[$i]->get_forum_id())
+                            .$this->delete_forum_form($forums[$i]->get_forum_id())
+                            .'</div><hr />';
                     }
                 } else {
                     // No forum in that category
@@ -55,6 +55,7 @@
                     <div id="div_category">
                         <h1>'.$category->get_name().'</h1>
                         <q>'.$category->get_description().'</q>
+                        '.$this->edit_category_html($category->get_forum_id()).'
                         '.$this->delete_category_form($category->get_forum_id()).'
                         '.$tmp.'
                     </div>';
@@ -106,22 +107,32 @@
             return $html;
         }
 
+        private function edit_category_html(int $category_id): string {
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ? 
+                    '<p><a href="ne_category.php?cid='.$category_id.'">Edit category</a></p>' : '';
+        }
+
+        private function edit_forum_html(int $forum_id): string {
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ? 
+                    '<p><a href="ne_forum.php?fid='.$forum_id.'">Edit Forum</a></p>' : '';
+        }
+
         private function delete_forum_form(int $forum_id): string {
-            // Next version only admin can delete it
-            return '<form action="php/process_forum.php" method="POST">
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ? 
+                    '<form action="php/process_forum.php" method="POST">
                         <input type="hidden" name="forum_id" value="'.$forum_id.'" />
                         <input type="hidden" name="delete" value="true">
                         <input type="submit" value="Delete Forum">
-                    </form>';
+                    </form>' : '';
         }
 
         private function delete_category_form(int $category_id): string {
-            // Next version only admin can delete it
-            return '<form action="php/process_category.php" method="POST">
+            return isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1 ?
+                    '<form action="php/process_category.php" method="POST">
                         <input type="hidden" name="category_id" value="'.$category_id.'" />
                         <input type="hidden" name="delete" value="true">
                         <input type="submit" value="Delete Category">
-                    </form>';
+                    </form>' : '';
         }
     }    
 ?>
