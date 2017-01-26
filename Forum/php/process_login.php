@@ -1,6 +1,6 @@
 <?php
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/db/user_db.php');
-    include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/user.php');
+    require_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/user.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/util/user_util.php');
 
     function get_user_name(UserUtil $user_util): string {
@@ -26,22 +26,29 @@
                     </script>';
     }
 
+    function display_window_alert_href(string $message, string $url) {
+        echo '<script type="text/javascript">
+                window.alert("'.$message.'");
+                window.location.href="'.$url.'";
+            </script>';
+    }
+
     $user_util = new UserUtil();
+    // Checking user data form
     $user_name = get_user_name($user_util);
     $password = get_password($user_util, $user_name);
+
+    // Getting User object
     $user = $user_util->get_user_login($user_name, $password);
-    if(isset($user) && $user->get_deleted() != 1) {
-        session_start();
-        $_SESSION['user'] = $user;
-        session_write_close();
-        echo '<script type="text/javascript">
-            window.alert("You are login as '.$_SESSION['user']->get_user_name().'");
-            window.location.href="../index.php";
-        </script>';
-    } else {
-        echo '<script type="text/javascript">
-            window.alert("Wrong user name and/or password");
-            window.history.back();
-        </script>';
-    }
+
+    if(session_status() == PHP_SESSION_NONE) { session_start(); }
+    
+    // Setting user data
+    $_SESSION['user_id'] = $user->get_user_id();
+    $_SESSION['user_name'] = $user_name;    
+    $_SESSION['city'] = $user->get_city();    
+    $_SESSION['state'] = $user->get_state();    
+    $_SESSION['country'] = $user->get_country();    
+    $_SESSION['profile_picture'] = $user->get_profile_picture();    
+    display_window_alert_href('You are login as '.$_SESSION['user_name'], '../index.php');
 ?>

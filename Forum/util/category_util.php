@@ -69,14 +69,13 @@
         // Method to create a menu
         function get_categories_menu(): string {
             $categories = $this->category_db->get_categories();
-            $html = '<div id="div_menu">';  
+            $html = '';  
             $max = sizeof($categories);
             for($i=0;$i < $max;$i++) {
-                $html .= '<span class="span_menu_content">
+                $html .= '<div class="col-md-2">
                     <a href="category.php?cid='.$categories[$i]->get_forum_id().'">
-                    '.$categories[$i]->get_name().'</a></span>';
+                    '.$categories[$i]->get_name().'</a></div>';
             }
-            $html .= '</div>';
             return $html;
         }
 
@@ -134,5 +133,5 @@
                         <input type="submit" value="Delete Category">
                     </form>' : '';
         }
-    }    
+    }
 ?>

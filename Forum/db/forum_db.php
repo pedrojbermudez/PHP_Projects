@@ -1,6 +1,6 @@
 <?php
     declare(strict_types=1);
-
+    
     include_once('db_connect.php');
     include_once('thread_db.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/category.php');

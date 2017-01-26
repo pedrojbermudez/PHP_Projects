@@ -27,7 +27,7 @@
             $this->is_mod = 0;
             $this->deleted = 0;
          }
-        
+
         function set_user_id(int $user_id) { $this->user_id = $user_id; }
         function get_user_id(): int { return $this->user_id; }
         

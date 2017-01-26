@@ -28,6 +28,16 @@
         }
     }
 
+    function get_descritpion(): string {
+        if(!isset($_POST['description']) || empty($_POST['description'])) {
+            return '';
+        } else {
+            $description = str_replace('<', '&lt;', $_POST['description']);
+            $description = str_replace('>', '&gt;', $description);
+            return nl2br($description);
+        }
+    }
+
     // Function to display a window alert with a message and back to the before page
     function display_window_alert_back(string $message) {
         echo '<script type="text/javascript">
@@ -70,10 +80,10 @@
     }
 
     $forum_util = new ForumUtil();
-    $description = isset($_POST['description']) ? $_POST['description'] : '';
+    $description = get_descritpion;
     $forum_id = isset($_POST['forum_id']) ? $_POST['forum_id'] : -1;
     
-    if(isset($_SESSION['user']) && $_SESSION['user']->get_user_id() == 1) {
+    if(isset($_SESSION['user_id']) && $_SESSION['user_id'] == 1) {
         if(!isset($_POST['delete'])) {
             $name = get_name();
             $category_id = get_category_id();

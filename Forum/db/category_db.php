@@ -60,15 +60,14 @@
         function get_category(int $category_id): Category {
             $this->connection = new Connection();
             $mysqli = $this->connection->connect();
-            $category;
-            if($stmt = $mysqli->prepare('select forum_id, name, description from forum where forum_id=?')) {
+            $category = new Category();
+            if($stmt = $mysqli->prepare('select name, description from forum where forum_id=?')) {
                 $stmt->bind_param('i', $category_id);
                 $stmt->execute();
-                $stmt->bind_result($category_id, $category_name, $category_description);
-                $forum_db = new ForumDB();
+                $stmt->bind_result($category_name, $category_description);
                 if($stmt->fetch()) {
+                    $forum_db = new ForumDB();
                     $forums = $forum_db->get_forums($category_id);
-                    $category = new Category();
                     $category->set_forum_id($category_id);
                     $category->set_name($category_name);
                     if(isset($category_description) && !empty($category_description))

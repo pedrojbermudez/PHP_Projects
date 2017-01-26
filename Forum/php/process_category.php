@@ -5,7 +5,7 @@
     session_start();
 
     function check_user_id() : bool { 
-        if(!isset($_SESSION['user']) || $_SESSION['user']->get_user_id() != 1) {
+        if(!isset($_SESSION['user_id']) || $_SESSION['user_id'] != 1) {
             display_window_alert_href('Incorrect action', '../index.php');
             return false;
         }
@@ -43,6 +43,16 @@
         }
     }
 
+    function get_descritpion(): string {
+        if(!isset($_POST['description']) || empty($_POST['description'])) {
+            return '';
+        } else {
+            $description = str_replace('<', '&lt;', $_POST['description']);
+            $description = str_replace('>', '&gt;', $description);
+            return nl2br($description);
+        }
+    }
+
     function display_window_alert_back(string $message) {
         echo '<script type="text/javascript">
                         window.alert("'.$message.'");
@@ -59,7 +69,7 @@
 
     if(check_user_id()) {
         $category_util = new CategoryUtil();
-        $description = isset($_POST['description']) ? $_POST['description'] : '';
+        $description = get_descritpion();
         $category_id = isset($_POST['category_id']) ? $_POST['category_id'] : -1;
         
         if(!isset($_POST['delete'])) {

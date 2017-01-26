@@ -48,9 +48,14 @@
     }
 
     function get_post(): string {
+        $post = '';
         if(!isset($_POST['post']) || empty($_POST['post']))
             display_window_alert_back('You must write something on the post field.');
-        return $_POST['post'];
+        else {
+            $post = str_replace('<', '&lt;', $_POST['post']);
+            $post = str_replace('>', '&gt;', $post);
+            return nl2br($post);
+        }
     }
 
     function edit_thread(int $thread_id, string $name, int $forum_id, ThreadUtil $thread_util) {

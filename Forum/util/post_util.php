@@ -1,6 +1,6 @@
 <?php
     declare(strict_types=1);
-
+    
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/post.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/db/post_db.php');
 

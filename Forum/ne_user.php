@@ -2,11 +2,14 @@
     include_once('util/user_util.php');
     include_once('util/menu.php');
     include_once('data/user.php');
-    
+    include_once('util/other.php');
+        
     if(session_status() == PHP_SESSION_NONE) { session_start(); }
 
     $user_util = new UserUtil();
     $menu_footer = new MenuFooter();
+    $other_util = new Other();
+    
     $title;
     $submit_button;
     $current_profile_picture;
@@ -23,8 +26,8 @@
     $profile_picture;
 
     // Checking if someone wants to edit a thread
-    if(isset($_SESSION['user'])) {
-        $user = $_SESSION['user'];
+    if(isset($_SESSION['user_id'])) {
+        $user = $user_util->get_user(intval($_SESSION['user_id']));
         if($user->get_user_id() > -1) {
             // Edit a user
             $title = 'Edit '.$user->get_user_name();
@@ -84,26 +87,30 @@
                 <title>'.$title.'</title>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
-                <link href="css/style.css" rel="stylesheet">
+                '.$other_util->get_bootstrap_css().'
             </head>
-            <body>'.
-                $menu_footer->get_menu().'<br />
-                <form action="php/process_user.php" method="POST" enctype="multipart/form-data">'.
-                    $user_id.
-                    $current_profile_picture.
-                    $user_name.
-                    $password.
-                    $repeat_password.
-                    $email.
-                    $name.
-                    $surname.
-                    $country.
-                    $state.
-                    $city.
-                    $profile_picture.
-                    $submit_button.' 
-                </form>'.
-                $menu_footer->get_footer('Pedro').'
+            <body style="padding-top: 70px;">
+                '.$other_util->get_jquery().'
+                '.$other_util->get_bootstrap_js().'
+                '.$menu_footer->get_menu().'
+                <div class="container">
+                    <form action="php/process_user.php" method="POST" enctype="multipart/form-data">'.
+                        $user_id.
+                        $current_profile_picture.
+                        $user_name.
+                        $password.
+                        $repeat_password.
+                        $email.
+                        $name.
+                        $surname.
+                        $country.
+                        $state.
+                        $city.
+                        $profile_picture.
+                        $submit_button.' 
+                    </form>
+                    '.$menu_footer->get_footer('Pedro').'
+                </div>
             </body>
         </html>';
 ?>

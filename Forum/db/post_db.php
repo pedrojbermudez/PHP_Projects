@@ -1,8 +1,9 @@
 <?php
     declare(strict_types=1);
-
+    
     include_once('db_connect.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/post.php');
+    
     
     /**
      * Class to manage posts on the database
@@ -123,7 +124,7 @@
                     $posts[] = $post_object;
                 }
                 $stmt->close();
-            }
+            } 
             $mysqli->close();
             return $posts;
         }

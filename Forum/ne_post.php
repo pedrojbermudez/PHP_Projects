@@ -1,10 +1,12 @@
 <?php
     include_once('util/post_util.php');
     include_once('util/menu.php');
+    include_once('util/other.php');
 
     $post_util = new PostUtil();
     $menu_footer = new MenuFooter();
-
+    $other_util = new Other();
+    
     $post;
     $submit_button;
     $thread_id;
@@ -51,16 +53,21 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
                 <link href="css/style.css" rel="stylesheet">
+                '.$other_util->get_bootstrap_css().'
             </head>
-            <body>'.
-                $menu_footer->get_menu().'<br />
-                <form action="php/process_post.php" method="POST">'.
-                    $post_id.
-                    $thread_id.
-                    $post.'<br />'.
-                    $submit_button.'<br /> 
-                </form>'.
-                $menu_footer->get_footer('Pedro').'
+            <body style="padding-top: 70px;">
+                '.$other_util->get_jquery().'
+                '.$other_util->get_bootstrap_js().'
+                '.$menu_footer->get_menu().'
+                <div class="container">
+                    <form action="php/process_post.php" method="POST">'.
+                        $post_id.
+                        $thread_id.
+                        $post.'<br />'.
+                        $submit_button.'<br /> 
+                    </form>
+                '.$menu_footer->get_footer('Pedro').'
+                </div>
             </body>
         </html>';
 ?>

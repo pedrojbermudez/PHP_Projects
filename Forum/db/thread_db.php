@@ -1,5 +1,6 @@
 <?php
     declare(strict_types=1);
+    
 
     include_once('db_connect.php');
     include_once('post_db.php');
@@ -106,12 +107,13 @@
             $this->conn = new Connection();
             $mysqli = $this->conn->connect();
             $threads = array();
-            if($stmt = $mysqli->prepare('select thread.thread_id as thread_id, 
-                thread.name thread_name, thread.user_id as user_id, 
+            $sql = 'select thread.thread_id as thread_id, 
+                thread.name as thread_name, thread.user_id as user_id, 
                 user.user_name as user_name, thread.forum_id as forum_id, 
                 forum.name as forum_name from thread, user, forum where 
                 thread.forum_id=? and thread.user_id=user.user_id and 
-                thread.forum_id=forum.forum_id')) {
+                thread.forum_id=forum.forum_id';
+            if($stmt = $mysqli->prepare($sql)) {
                 $stmt->bind_param('i', $forum_id);
                 $stmt->execute();
                 $stmt->bind_result($thread_id, $thread_name, $user_id, $user_name, $forum_id, $forum_name);
@@ -125,6 +127,54 @@
                     $thread->set_user_name($user_name);
                     $threads[] = $thread;
                 }
+                $stmt->close();
+            }
+            $mysqli->close();
+            return $threads;
+        }
+
+        // Get the firsts 30 threads
+        function get_30_threads(): array {
+            $threads = array();
+            $this->conn = new Connection();
+            $mysqli = $this->conn->connect();
+            $sql_thread_id = 'select thread_id from Post group by thread_id 
+                        order by MAX(post_id) desc limit 0,30';
+            if($stmt = $mysqli->prepare($sql_thread_id)) {
+                $stmt->execute();
+                $stmt->store_result();
+                $stmt->bind_result($thread_id);
+                while($stmt->fetch()) {
+                    // Getting thread id
+                    $thread = new Thread();
+                    $sql_thread_forum_user = 'select thread.user_id as user_id, 
+                                thread.forum_id as forum_id, thread.name as 
+                                thread_name, user.user_name as user_name, 
+                                forum.name as forum_name from thread, forum, 
+                                user where thread.thread_id=? and 
+                                thread.forum_id=forum.forum_id and 
+                                thread.user_id=user.user_id';
+                    if($stmt2 = $mysqli->prepare($sql_thread_forum_user)) {                        
+                        // Getting user id, thread name, forum name, forum id and user name
+                        $stmt2->bind_param('i', $thread_id);
+                        $stmt2->execute();
+                        $stmt2->bind_result($user_id, $forum_id, $thread_name, 
+                                    $user_name, $forum_name);
+                        if($stmt2->fetch()) {
+                            // Setting all values to the current thread
+                            $thread->set_thread_id($thread_id);
+                            $thread->set_forum_id($forum_id);
+                            $thread->set_user_id($user_id);
+                            $thread->set_thread_name($thread_name);
+                            $thread->set_forum_name($forum_name);
+                            $thread->set_user_name($user_name);
+                            $threads[] = $thread;
+                        }
+                        $stmt2->free_result();
+                        $stmt2->close();
+                    }
+                }
+                $stmt->free_result();
                 $stmt->close();
             }
             $mysqli->close();
