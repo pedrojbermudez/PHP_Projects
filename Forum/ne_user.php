@@ -24,26 +24,26 @@
     $state;
     $city;
     $profile_picture;
-
-    // Checking if someone wants to edit a thread
+    $url_action;
     if(isset($_SESSION['user_id'])) {
-        $user = $user_util->get_user(intval($_SESSION['user_id']));
-        if($user->get_user_id() > -1) {
+        $user = json_decode($user_util->get_user(intval($_SESSION['user_id'])), true);
+        if(isset($user['user_id']) && $user['user_id'] > -1) {
             // Edit a user
-            $title = 'Edit '.$user->get_user_name();
-            $user_id = '<input type="hidden" name="user_id" value="'.$user->get_user_id().'" />';
-            $current_profile_picture = '<input type="hidden" name="current_profile_picture" value="'.$user->get_profile_picture().'" />';
-            $name = '<p><input type="text" name="name" placeholder="Name" value="'.$user->get_name().'" /></p>';
-            $surname = '<p><input type="text" name="surname" placeholder="Surname" value="'.$user->get_surname().'" /></p>';
+            $title = 'Edit '.$user['user_name'];
+            $user_id = '<input type="hidden" name="user_id" value="'.$user['user_id'].'" />';
+            $current_profile_picture = '<input type="hidden" name="current_profile_picture" value="'.$user['profile_picture'].'" />';
+            $name = '<p><input type="text" name="name" placeholder="Name" value="'.$user['name'].'" /></p>';
+            $surname = '<p><input type="text" name="surname" placeholder="Surname" value="'.$user['surname'].'" /></p>';
             $user_name = '';
             $email = '';
             $password = '';
             $repeat_password = '';
-            $country = '<p><input type="text" name="country" placeholder="Country" value="'.$user->get_country().'" /></p>';
-            $state = '<p><input type="text" name="state" placeholder="State" value="'.$user->get_state().'" /></p>';
-            $city = '<p><input type="text" name="city" placeholder="City" value="'.$user->get_city().'" /></p>';
-            $profile_picture = '<div>Current picture: <img src="'.$user->get_profile_picture().'" width="200" />
+            $country = '<p><input type="text" name="country" placeholder="Country" value="'.$user['country'].'" /></p>';
+            $state = '<p><input type="text" name="state" placeholder="State" value="'.$user['state'].'" /></p>';
+            $city = '<p><input type="text" name="city" placeholder="City" value="'.$user['city'].'" /></p>';
+            $profile_picture = '<div>Current picture: <img src="'.$user['profile_picture'].'" width="200" />
                 <p>New profile picture: <input type="file" name="profile_picture" /></p></div>';
+            $url_action = 'user/edit';
             $submit_button = '<p><input type="submit" value="Edit" /></p>';
         } else {
             // Wrong user id
@@ -60,6 +60,7 @@
             $state = '';
             $city = '';
             $profile_picture = '';
+            $url_action = '';
             $submit_button = '<input type="button" onclick="history.back();" value="Back" /></p>';
         }
     } else {
@@ -77,6 +78,7 @@
         $state = '<p><input type="text" name="state" placeholder="State" /></p>';
         $city = '<p><input type="text" name="city" placeholder="City" /></p>';
         $profile_picture = '<p>Profile picture: <input type="file" name="profile_picture" /></p>';
+        $url_action = 'user/new';
         $submit_button = '<p><input type="submit" value="Create" /></p>';
     } 
 
@@ -94,7 +96,7 @@
                 '.$other_util->get_bootstrap_js().'
                 '.$menu_footer->get_menu().'
                 <div class="container">
-                    <form action="php/process_user.php" method="POST" enctype="multipart/form-data">'.
+                    <form action="'.$url_action.'" method="POST" enctype="multipart/form-data">'.
                         $user_id.
                         $current_profile_picture.
                         $user_name.

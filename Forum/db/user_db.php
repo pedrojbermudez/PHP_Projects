@@ -13,17 +13,18 @@
         
         function __construct(){}
         
-        function new_user(string $user_name, string $password, string $email, 
-            string $name, string $surname, string $country, string $state, 
-            string $city, string $profile_picture = 'images/default.jpg', int $is_mod = 0, 
-            int $deleted = 0) {
+        function new_user(string $json) {
             $this->conn_db = new Connection();
             $mysqli = $this->conn_db->connect();
+            $user = json_decode($json, true);
             $sql = 'insert into user (user_name, password, email, name, surname, 
                 country, state, city, profile_picture, is_mod, deleted) values (?,MD5(?),?,?,?,?,?,?,?,?,?)';
             if($stmt = $mysqli->prepare($sql)) {
-                $stmt->bind_param('sssssssssii', $user_name,  $password, $email, $name, $surname, 
-                    $country, $state, $city, $profile_picture, $is_mod, $deleted);
+                $number0 = 0;
+                $stmt->bind_param('sssssssssii', $user['user_name'],  $user['password'], 
+                    $user['email'], $user['name'], $user['surname'], 
+                    $user['country'], $user['state'], $user['city'], 
+                    $user['profile_picture'], $number0, $number0);
                 $stmt->execute();
                 $stmt->close();
             }
@@ -90,33 +91,31 @@
             return $user;
         }
 
-        function get_user(int $user_id): User {
+        /*
+        * Return a json. If there is no user id will be -1
+        */
+        function get_user(int $user_id): array {
             $this->conn_db = new Connection();
             $mysqli = $this->conn_db->connect();
             $sql = 'select user_name, name, surname, country, state, city, profile_picture, is_mod, deleted 
                     from user where user_id=?';
-            $user = new User();
+            $user = array();
             if($stmt = $mysqli->prepare($sql)) {
                 $stmt->bind_param('i', $user_id);
                 $stmt->execute();
                 $stmt->bind_result($user_name, $name, $surname, $country, $state, $city, $profile_picture, $is_mod, 
                     $deleted);
                 if($stmt->fetch()){
-                    $user->set_user_id($user_id);
-                    $user->set_user_name($user_name);
-                    $user->set_profile_picture($profile_picture);
-                    $user->set_is_mod($is_mod);
-                    $user->set_deleted($deleted);
-                    if(isset($name) && !empty($name))
-                        $user->set_name($name);
-                    if(isset($surname) && !empty($surname))
-                        $user->set_surname($surname);
-                    if(isset($country) && !empty($country))
-                        $user->set_country($country);
-                    if(isset($state) && !empty($state))
-                        $user->set_state($state);
-                    if(isset($city) && !empty($city))
-                        $user->set_city($city);
+                    $user['user_id'] = $user_id;
+                    $user['user_name'] = $user_name;
+                    $user['profile_picture'] = $profile_picture;
+                    $user['is_mod'] = $is_mod;
+                    $user['deleted'] = $deleted;
+                    $user['name'] = isset($name) && !empty($name) ? $name : '';
+                    $user['surname'] = isset($surname) && !empty($surname) ? $surname : '';
+                    $user['country'] = isset($country) && !empty($country) ? $country : '';
+                    $user['state'] = isset($state) && !empty($state) ? $state : '';
+                    $user['city'] = isset($city) && !empty($city) ? $city : '';
                 }
                  $stmt->close();
             }

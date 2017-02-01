@@ -51,7 +51,6 @@
         $post = '';
         $submit_button = '<input type="button" onclick="history.back();" value="Back">';
     }
-
     echo '
         <!DOCTYPE html>
         <html lang="en">

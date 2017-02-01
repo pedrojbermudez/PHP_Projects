@@ -10,5 +10,5 @@
     session_destroy();
     echo '<script type="text/javascript">
         window.alert("You are off right now. Please come back soon, thank you.");
-        window.location.href="index.php"</script>';
+        window.location.href="../index.php"</script>';
 ?>

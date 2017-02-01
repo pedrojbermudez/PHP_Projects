@@ -16,13 +16,8 @@
             $this->user_db = new UserDB();
         }
 
-        function new_user(string $user_name, string $password, string $email, 
-            string $name, string $surname, string $country, string $state, 
-            string $city, string $profile_picture = 'images/default.jpg', 
-            int $is_mod = 0, int $deleted = 0) {
-            $this->user_db->new_user($user_name, $password, $email, 
-                $name, $surname, $country, $state, $city, $profile_picture, 
-                $is_mod, $deleted);
+        function new_user(string $json) {
+            $this->user_db->new_user($json);
         }
 
         function edit_user(int $user_id, string $name, string $surname, string $country, string $state, 
@@ -33,9 +28,9 @@
 
         function delete_user(int $user_id) { $this->user_db->delete_user($user_id); }
         
-        function get_user(int $user_id): User {
-             $user = $this->user_db->get_user($user_id);
-             return $user; 
+        function get_user(int $user_id) {
+            $user = $this->user_db->get_user($user_id);
+            return json_encode($user); 
         }
 
         // Check if user name exists in database

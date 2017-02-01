@@ -8,7 +8,7 @@
     include_once('util/other.php');
 
     function get_thread_list(): string {
-        $html = '';
+        $html = '<div id="thread_list">';
         $thread_util = new ThreadUtil();
         $threads = $thread_util->get_30_threads_html();
         foreach ($threads as $thread) {
@@ -20,18 +20,21 @@
             $user_name =$thread->get_user_name();
             $html .= '
                 <div class="row">
-                    <div class="col-md-2">
-                        <a href="user.php?uid='.$user_id.'">'.$user_name.'</a>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <a href="forum.php?fid='.$forum_id.'">'.$forum_name.'</a>: 
+                            <a href="thread.php?tid='.$thread_id.'">'.$thread_name.'</a>
+                        </div>
                     </div>
-                    <div class="col-md-1">
-                        <a href="forum.php?fid='.$forum_id.'">'.$forum_name.'</a>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <a href="user/view/'.$user_id.'">'.$user_name.'</a>
+                        </div>
+                        <hr />
                     </div>
-                    <div class="col-md-6">
-                        <a href="thread.php?tid='.$thread_id.'">'.$thread_name.'</a>
-                    </div><hr />
                 </div>';
         }
-        return $html;
+        return $html.'</div>';
     }
     
     $other_util = new Other();
@@ -55,9 +58,12 @@
             '.$other_util->get_bootstrap_js().'
             <div class="container">
                 '.$menu_footer->get_menu().'
+                <div id="forum_list" style="display: none"></div>
                 '.$threads.'
                 '.$menu_footer->get_footer('Pedro').'    
             </div>
+            <script type="text/javascript" src="js/ajax.js"></script>
+            <script type="text/javascript" src="js/show_hide.js"></script>
         </body>
     </html>';
 ?>

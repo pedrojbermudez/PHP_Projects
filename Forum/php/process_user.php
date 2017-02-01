@@ -108,27 +108,23 @@
                  return !empty($current_profile_picture) ? $current_profile_picture : 'images/default.jpg';
             }
     }
-    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id'], 10) : -1;
+    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : -1;
     $name = isset($_POST['name']) ? $_POST['name'] : '';
     $surname = isset($_POST['surname']) ? $_POST['surname'] : '';
     $country = isset($_POST['country']) ? $_POST['country'] : '';
     $state = isset($_POST['state']) ? $_POST['state'] : '';
     $city = isset($_POST['city']) ? $_POST['city'] : '';
-    $current_profile_picture = isset($_POST['current_profile_picture']) ? $_POST['current_profile_picture'] : '';
+    $current_profile_picture = isset($_POST['current_profile_picture']) ? $_POST['current_profile_picture'] : 'images/default.jpg';
     $profile_picture = write_file();
     $user_util = new UserUtil();
     // Checking if exists a session and the user wants to edit
-    if(isset($_SESSION['user']) && $_SESSION['user']->get_user_id() > -1 && $user_id >= -1) {
-        $user = $user_util->get_user($user_id);
+    if(isset($_SESSION['user_id']) && intval($_SESSION['user_id']) > -1 && $user_id >= -1) {
+        $user = json_decode($user_util->get_user($user_id), true);
         // Checking if the user wants to edit him/her user or not.
-        if(isset($user) && $user->get_user_id() == $_SESSION['user']->get_user_id() ) {
+        if(isset($user['user_id']) && ($user['user_id'] 
+                == intval($_SESSION['user_id']) || intval($_SESSION['user_id']) == 1)) {
             $user_util->edit_user($user_id, $name, $surname, $country, $state, $city, $profile_picture);
-            $_SESSION['user']->set_name($name);
-            $_SESSION['user']->set_surname($surname);
-            $_SESSION['user']->set_country($country);
-            $_SESSION['user']->set_state($state);
-            $_SESSION['user']->set_city($city);
-            $_SESSION['user']->set_profile_picture($profile_picture);
+            $_SESSION['profile_picture'] = $profile_picture;
             display_window_alert_href('Your user was edited.', '../index.php');
         } else {
             display_window_alert_back('There was a problem. Please check your data.');
@@ -138,7 +134,19 @@
         $user_name = user_name();
         $email = email();
         $password = password();
-        $user_util->new_user($user_name, $password, $email, $name, $surname, $country, $state, $city, $profile_picture);
+        $user = array(
+            'user_name' => $user_name,
+            'password' => $password,
+            'email' => $email,
+            'name' => $name,
+            'surname' => $surname,
+            'country' => $country,
+            'state' => $state,
+            'city' => $city,
+            'profile_picture' => $profile_picture
+        );
+        $json_user = json_encode($user);
+        $user_util->new_user($json_user);
         display_window_alert_href('Thanks for signing up.', '../index.php');
     }
 ?>

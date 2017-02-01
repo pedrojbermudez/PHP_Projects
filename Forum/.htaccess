@@ -1,0 +1,20 @@
+RewriteEngine on
+
+# -----------------------------------------------------------------------------
+# Modifying user urls
+# Viewing user
+RewriteRule ^user/view$                 user.php?level=1&uid=$1     [L,QSA]
+RewriteRule ^user/view/$                user.php?level=1&uid=$1     [L,QSA]
+RewriteRule ^user/view/([0-9]+)$        user.php?uid=$1             [L,QSA]
+RewriteRule ^user/view/([0-9]+)/$       user.php?uid=$1             [L,QSA]
+
+# Editing, creating, deleting user
+RewriteRule ^user/edit$                 php/process_user.php        [L,QSA]
+RewriteRule ^user/new$                  php/process_user.php        [L,QSA]
+RewriteRule ^user/delete$               php/process_user.php        [L,QSA]
+
+# Login and logout
+RewriteRule ^user/login$                php/process_login.php       [L,QSA]
+RewriteRule ^user/logout$               logout.php                  [L,QSA]
+# -----------------------------------------------------------------------------
+
