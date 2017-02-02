@@ -1,6 +1,6 @@
 <?php
     declare(strict_types=1);
-    
+
     include_once('db_connect.php');
     include_once($_SERVER['DOCUMENT_ROOT'].'/Forum/data/user.php');
 
@@ -92,7 +92,7 @@
         }
 
         /*
-        * Return a json. If there is no user id will be -1
+        * Return an array
         */
         function get_user(int $user_id): array {
             $this->conn_db = new Connection();
@@ -116,6 +116,8 @@
                     $user['country'] = isset($country) && !empty($country) ? $country : '';
                     $user['state'] = isset($state) && !empty($state) ? $state : '';
                     $user['city'] = isset($city) && !empty($city) ? $city : '';
+                } else {
+                    $user['user_id'] = -1;
                 }
                  $stmt->close();
             }

@@ -25,7 +25,7 @@
                 $css .= '../';
             }
             return $css.'bootstrap/css/bootstrap.min.css" 
-                        rel="stylesheet" media="screen">';
+                        rel="stylesheet" media="screen" />';
         }
     } 
 ?>

@@ -1,5 +1,6 @@
 function showHide(elementId) {
-    function showElements(show_category, show_forum, show_thread, show_post, show_user) {
+    function showElements(show_category, show_forum, show_thread, show_post, 
+            show_user) {
         var category_list = document.getElementById("category_list");
         if(category_list != null) {
             if(show_category) {

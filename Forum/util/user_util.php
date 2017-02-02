@@ -28,9 +28,74 @@
 
         function delete_user(int $user_id) { $this->user_db->delete_user($user_id); }
         
-        function get_user(int $user_id) {
+        function get_user(int $user_id, int $level = 2) {
+            $content_type = $_SERVER['HTTP_ACCEPT'];
+            $status_code;
+            $status_message;
+            $level_url = '';
+            for($i=0; $i < $level; $i++) {
+                $level_url .= '../';
+            }
             $user = $this->user_db->get_user($user_id);
-            return json_encode($user); 
+            if($user['user_id'] > -1) {
+                $status_code = 200;
+                $status_message = 'OK';
+                header('HTTP/1.1 '.$status_code.' '.$status_message); 
+                if(strpos($content_type,'application/json') !== false){
+                    header('Content-Type:application/json');
+                    return json_encode($user);
+                } else if(strpos($content_type,'text/html') !== false){
+                    header('Content-Type:text/html');
+                    // Bootstrap
+                    return '
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h1>'.$user['user_name'].'</h1><br />
+                                <img src="'.$level_url.$user['profile_picture'].'" width="250" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>'.$user['name'].'</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>'.$user['surname'].'</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>'.$user['country'].'</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>'.$user['state'].'</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>'.$user['city'].'</p>
+                            </div>
+                        </div>
+                        ';
+                } else if(strpos($content_type,'application/xml') !== false) {
+                    header('Content-Type:application/xml');
+                    $xml = new SimpleXMLElement('<?xml version="1.0"?><user></user>');
+                    foreach($user as $key=>$value) {
+                        $xml->addChild(strval($key), strval($value));
+                    }
+                    return $xml->asXML();
+                }
+            } else {
+                $status_code = 404;
+                $status_message = 'Not found';
+            header('HTTP/1.1 '.$status_code.' '.$status_message);
+            header('Content-Type:'.$content_type); 
+                $user['error'] = 'No user found.';
+            }
+            
         }
 
         // Check if user name exists in database

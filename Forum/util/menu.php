@@ -96,9 +96,9 @@
                                 method="POST">
                             <div class="form-group">
                                 <input type="text" name="login_user_name" 
-                                        placeholder="User name" required />
+                                        placeholder="User name" required="" />
                                 <input type="password" name="login_password" 
-                                        placeholder="Password" required />
+                                        placeholder="Password" required="" />
                                 <button type="submit" class="btn btn-default">
                                         Login</button>
                                 <a href="ne_user.php">New user</a>
